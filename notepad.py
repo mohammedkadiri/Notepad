@@ -1,9 +1,20 @@
+"""Notepad
+
+This class implements a customised replica of a notepad application including
+all the basic functunality such as Opening files, Editing files,
+Formatting and Viewing files.
+
+Author : Mohammed Kadiri
+Date : 20 June 2019
+"""
+
 from tkinter import *
 from tkinter import scrolledtext
 
-# Create a class to represent notepads
-#First create the  menu
+
 class Notepad:
+
+
     def __init__(self, master):
         self.menubar = Menu(master)
         self.file_menu = Menu(self.menubar, tearoff=0)
@@ -18,8 +29,21 @@ class Notepad:
         self.menubar.add_cascade(label="View", menu=self.view_menu)
         self.menubar.add_cascade(label="Help", menu=self.help_menu)
 
+        # Implement text widget with scrolling comptability
+
         self.text = scrolledtext.ScrolledText(master, width=10, height=2, wrap=WORD)
         self.text.pack(expand=TRUE, fill='both')
+
+        # Include Dropdown options for File
+        self.file_menu.add_command(label="New")
+        self.file_menu.add_command(label="Open")
+        self.file_menu.add_command(label="Save")
+        self.file_menu.add_command(label="Save As...")
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Page Setup...")
+        self.file_menu.add_command(label="Print")
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Exit")
 
         master.config(menu=self.menubar)
 
