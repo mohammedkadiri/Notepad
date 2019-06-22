@@ -9,6 +9,7 @@ Date : 20 June 2019
 """
 
 from tkinter import *
+from tkinter import filedialog
 from tkinter import scrolledtext
 
 
@@ -19,8 +20,8 @@ class NotePad(Tk):
         self.geometry("600x515+300+300")
         self.title("Untitled - Notepad")
         self.iconbitmap('icons\\Naruto.ico')
-        self.menubar = Menu()
-        self.file_menu = Menu(self.menubar, tearoff=0)
+        self.menubar = Menu(self)
+        self.file_menu = Menu(self.menubar, tearoff=0, activebackground='black', activeforeground='#2471A3')
         self.edit_menu = Menu(self.menubar, tearoff=0)
         self.format_menu = Menu(self.menubar, tearoff=0)
         self.view_menu = Menu(self.menubar, tearoff=0)
@@ -38,15 +39,18 @@ class NotePad(Tk):
         self.menubar.add_cascade(label="View", menu=self.view_menu)
         self.menubar.add_cascade(label="Help", menu=self.help_menu)
 
+
     def create_scroll_wheel(self):
         """ Include a horizontal-scroll wheel to the window."""
         self.text = scrolledtext.ScrolledText(width=10, height=2, wrap=WORD)
+        self.text.config(bg='#273746', fg='#2ECC71')
         self.text.pack(expand=TRUE, fill='both')
 
     def add_drop_down_menu(self):
         """Provides a cascading drop-down option for each menu."""
         self.file_menu.add_command(label="New")
-        self.file_menu.add_command(label="Open")
+        self.file_menu.config(bg='#2C3E50', fg='#2ECC71')
+        self.file_menu.add_command(label="Open", command=self.open)
         self.file_menu.add_command(label="Save")
         self.file_menu.add_command(label="Save As...")
         self.file_menu.add_separator()
@@ -54,6 +58,17 @@ class NotePad(Tk):
         self.file_menu.add_command(label="Print")
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit")
+
+    def read(self, filepath):
+        """ Reads a file and displays to window"""
+        self.text.insert('end', open(filepath, 'r').read())
+
+    def open(self):
+        """ Display a file dialog to open a file"""
+        filename = filedialog.askopenfilename(initialdir="/", title="Select file", filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
+        self.read(filename)
+
+
 
 
 notepad = NotePad()
