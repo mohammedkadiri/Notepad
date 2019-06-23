@@ -11,6 +11,7 @@ Date : 20 June 2019
 from tkinter import *
 from tkinter import filedialog
 from tkinter import scrolledtext
+import tkinter.messagebox
 
 
 class NotePad(Tk):
@@ -50,7 +51,7 @@ class NotePad(Tk):
 
     def add_drop_down_menu(self):
         """ Provides a cascading drop-down option for each menu."""
-        self.file_menu.add_command(label="New")
+        self.file_menu.add_command(label="New", command=self.new_file)
         self.file_menu.config(bg='#2C3E50', fg='#2ECC71')
         self.file_menu.add_command(label="Open", command=self.open_file)
         self.file_menu.add_command(label="Save", command=self.save_file)
@@ -59,7 +60,28 @@ class NotePad(Tk):
         self.file_menu.add_command(label="Page Setup...")
         self.file_menu.add_command(label="Print")
         self.file_menu.add_separator()
-        self.file_menu.add_command(label="Exit")
+        self.file_menu.add_command(label="Exit", command=self.exit)
+
+    def new_file(self):
+        """ Create a new file """
+        if not self.text.compare("end-1c", "==", "1.0"):
+            if self.current_open_file == 'no_file':
+                answer = tkinter.messagebox.askquestion('Notepad', "Do you want to save changes to Untitled ?")
+                if answer == 'yes':
+                    self.save_fileas()
+            else:
+                answer = tkinter.messagebox.askquestion('Notepad', "Do you want to save changes to" + self.current_open_file + "?")
+                if answer == 'yes':
+                    self.save_file()
+                    self.create_new()
+                if answer == 'no':
+                    self.create_new()
+
+
+    def create_new(self):
+        self.title("Untitled - Notepad")
+        self.current_open_file = 'no_file'
+        self.text.delete(1.0, END)
 
     def read_file(self, filepath):
         """ Reads a file and displays to window"""
@@ -68,6 +90,7 @@ class NotePad(Tk):
 
     def open_file(self):
         """ Display a file dialog to open a file"""
+        self.text.delete(1.0, END)
         self.filepath = filedialog.askopenfilename(initialdir="/", title="Select file", filetypes=(("Text Documents", "*.txt"), ("All Files", "*.*")))
         if self.filepath:
             self.current_open_file = self.filepath
@@ -79,9 +102,9 @@ class NotePad(Tk):
         """ Save a file with provided name"""
         self.filepath = filedialog.asksaveasfile(initialdir="/", title="Select file", filetypes=(("Text Documents", "*.txt"), ("All Files", "*.*")))
         text_to_save = str(self.text.get(1.0, END))
-        self.current_open_file = self.filepath.name
         if self.filepath is None:
             return None
+        self.current_open_file = self.filepath.name
         self.filepath.write(text_to_save)
         filename = self.filepath.name.split("/")[-1] + " - Notepad"
         self.filepath.close()
@@ -95,6 +118,9 @@ class NotePad(Tk):
         else:
             with open(self.current_open_file, "w") as file:
                 file.write(self.text.get(1.0, END))
+
+    def exit(self):
+        self.quit()
 
 notepad = NotePad()
 notepad.mainloop()
