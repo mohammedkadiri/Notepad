@@ -15,6 +15,8 @@ from tkinter import scrolledtext
 
 class NotePad(Tk):
     """ NotePad a basic text-editing program which provides functionality such as editing,saving,formating etc."""
+    current_open_file = "no_file"
+
     def __init__(self):
         super(NotePad, self).__init__()
         self.geometry("600x515+300+300")
@@ -32,7 +34,7 @@ class NotePad(Tk):
         self.config(menu=self.menubar)
 
     def create_menu_bar(self):
-        """Creates a menu bar for the window."""
+        """ Creates a menu bar for the window."""
         self.menubar.add_cascade(label="File", menu=self.file_menu)
         self.menubar.add_cascade(label="Edit", menu=self.edit_menu)
         self.menubar.add_cascade(label="Format", menu=self.format_menu)
@@ -47,29 +49,52 @@ class NotePad(Tk):
         self.text.pack(expand=TRUE, fill='both')
 
     def add_drop_down_menu(self):
-        """Provides a cascading drop-down option for each menu."""
+        """ Provides a cascading drop-down option for each menu."""
         self.file_menu.add_command(label="New")
         self.file_menu.config(bg='#2C3E50', fg='#2ECC71')
-        self.file_menu.add_command(label="Open", command=self.open)
-        self.file_menu.add_command(label="Save")
-        self.file_menu.add_command(label="Save As...")
+        self.file_menu.add_command(label="Open", command=self.open_file)
+        self.file_menu.add_command(label="Save", command=self.save_file)
+        self.file_menu.add_command(label="Save As...", command=self.save_fileas)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Page Setup...")
         self.file_menu.add_command(label="Print")
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit")
 
-    def read(self, filepath):
+    def read_file(self, filepath):
         """ Reads a file and displays to window"""
-        self.text.insert('end', open(filepath, 'r').read())
+        if self.filepath:
+            self.text.insert('end', open(filepath, 'r').read())
 
-    def open(self):
+    def open_file(self):
         """ Display a file dialog to open a file"""
-        filename = filedialog.askopenfilename(initialdir="/", title="Select file", filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
-        self.read(filename)
+        self.filepath = filedialog.askopenfilename(initialdir="/", title="Select file", filetypes=(("Text Documents", "*.txt"), ("All Files", "*.*")))
+        if self.filepath:
+            self.current_open_file = self.filepath
+            self.read_file(self.filepath)
+            filename = self.filepath.split("/")[-1] + " - Notepad"
+            self.title(filename)
 
+    def save_fileas(self):
+        """ Save a file with provided name"""
+        self.filepath = filedialog.asksaveasfile(initialdir="/", title="Select file", filetypes=(("Text Documents", "*.txt"), ("All Files", "*.*")))
+        text_to_save = str(self.text.get(1.0, END))
+        self.current_open_file = self.filepath.name
+        if self.filepath is None:
+            return None
+        self.filepath.write(text_to_save)
+        filename = self.filepath.name.split("/")[-1] + " - Notepad"
+        self.filepath.close()
+        self.title(filename)
 
-
+    def save_file(self):
+        """ Save a file """
+        # Check if the file is new
+        if self.current_open_file == "no_file":
+            self.save_fileas()
+        else:
+            with open(self.current_open_file, "w") as file:
+                file.write(self.text.get(1.0, END))
 
 notepad = NotePad()
 notepad.mainloop()
