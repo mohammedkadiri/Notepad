@@ -19,13 +19,13 @@ class NotePad(Tk):
     current_open_file = "no_file"
 
     def __init__(self):
-        super(NotePad, self).__init__()
+        super().__init__()
         self.geometry("600x515+300+300")
         self.title("Untitled - Notepad")
         self.iconbitmap('icons\\Naruto.ico')
         self.menubar = Menu(self)
         self.file_menu = Menu(self.menubar, tearoff=0, activebackground='black', activeforeground='#2471A3')
-        self.edit_menu = Menu(self.menubar, tearoff=0)
+        self.edit_menu = Menu(self.menubar, tearoff=0, activebackground='black', activeforeground='#2471A3')
         self.format_menu = Menu(self.menubar, tearoff=0)
         self.view_menu = Menu(self.menubar, tearoff=0)
         self.help_menu = Menu(self.menubar, tearoff=0)
@@ -61,6 +61,15 @@ class NotePad(Tk):
         self.file_menu.add_command(label="Print")
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit", command=self.exit)
+        self.edit_menu.add_command(label="Undo")
+        self.edit_menu.config(bg='#2C3E50', fg='#2ECC71')
+        self.edit_menu.add_command(label="Cut")
+        self.edit_menu.add_command(label="Copy")
+        self.edit_menu.add_command(label="Paste")
+        self.edit_menu.add_command(label="Delete")
+        self.edit_menu.add_separator()
+        self.edit_menu.add_command(label="Select All")
+
 
     def new_file(self):
         """ Create a new file """
