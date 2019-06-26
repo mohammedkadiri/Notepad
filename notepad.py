@@ -9,7 +9,7 @@ Date : 20 June 2019
 """
 
 from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog, TclError
 from tkinter import scrolledtext
 import tkinter.messagebox
 
@@ -34,6 +34,7 @@ class NotePad(Tk):
         self.add_drop_down_menu()
         self.config(menu=self.menubar)
 
+
     def create_menu_bar(self):
         """ Creates a menu bar for the window."""
         self.menubar.add_cascade(label="File", menu=self.file_menu)
@@ -45,7 +46,7 @@ class NotePad(Tk):
 
     def create_scroll_wheel(self):
         """ Include a horizontal-scroll wheel to the window."""
-        self.text = scrolledtext.ScrolledText(width=10, height=2, wrap=WORD)
+        self.text = scrolledtext.ScrolledText(width=10, height=2, wrap=WORD, undo=True)
         self.text.config(bg='#273746', fg='#2ECC71')
         self.text.pack(expand=TRUE, fill='both')
 
@@ -61,11 +62,11 @@ class NotePad(Tk):
         self.file_menu.add_command(label="Print")
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit", command=self.exit)
-        self.edit_menu.add_command(label="Undo")
+        self.edit_menu.add_command(label="Undo", command=self.undo)
         self.edit_menu.config(bg='#2C3E50', fg='#2ECC71')
-        self.edit_menu.add_command(label="Cut")
-        self.edit_menu.add_command(label="Copy")
-        self.edit_menu.add_command(label="Paste")
+        self.edit_menu.add_command(label="Cut", command=self.cut)
+        self.edit_menu.add_command(label="Copy", command=self.copy)
+        self.edit_menu.add_command(label="Paste", command=self.paste)
         self.edit_menu.add_command(label="Delete")
         self.edit_menu.add_separator()
         self.edit_menu.add_command(label="Select All")
@@ -130,6 +131,25 @@ class NotePad(Tk):
 
     def exit(self):
         self.quit()
+
+    def undo(self):
+        """ Reverses the last action """
+        self.text.edit_undo()
+
+    def copy(self):
+        """ Copies the selected text """
+        self.clipboard_clear()
+        self.clipboard_append(self.text.selection_get())
+
+    def cut(self):
+        """ Cuts the selected text """
+        self.clipboard_clear()
+        self.clipboard_append(self.text.get(SEL_FIRST, SEL_LAST))
+        self.text.delete(SEL_FIRST, SEL_LAST)
+
+    def paste(self):
+        """ Retrieves text from clipboard and displays inside widget"""
+        self.text.insert('end', self.selection_get(selection="CLIPBOARD"))
 
 notepad = NotePad()
 notepad.mainloop()
