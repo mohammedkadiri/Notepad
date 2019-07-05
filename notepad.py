@@ -33,6 +33,8 @@ class NotePad(Tk):
         self.create_scroll_wheel()
         self.add_drop_down_menu()
         self.config(menu=self.menubar)
+        self.shortcuts()
+
 
 
     def create_menu_bar(self):
@@ -52,27 +54,27 @@ class NotePad(Tk):
 
     def add_drop_down_menu(self):
         """ Provides a cascading drop-down option for each menu."""
-        self.file_menu.add_command(label="New", command=self.new_file)
+        self.file_menu.add_command(label="New      Ctrl+N", command=self.new_file)
         self.file_menu.config(bg='#2C3E50', fg='#2ECC71')
-        self.file_menu.add_command(label="Open", command=self.open_file)
-        self.file_menu.add_command(label="Save", command=self.save_file)
+        self.file_menu.add_command(label="Open     Ctrl+O", command=self.open_file)
+        self.file_menu.add_command(label="Save       Ctrl+S", command=self.save_file)
         self.file_menu.add_command(label="Save As...", command=self.save_fileas)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Page Setup...")
         self.file_menu.add_command(label="Print")
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit", command=self.exit)
-        self.edit_menu.add_command(label="Undo", command=self.undo)
+        self.edit_menu.add_command(label="Undo    Ctrl+Z", command=self.undo)
         self.edit_menu.config(bg='#2C3E50', fg='#2ECC71')
-        self.edit_menu.add_command(label="Cut", command=self.cut)
-        self.edit_menu.add_command(label="Copy", command=self.copy)
-        self.edit_menu.add_command(label="Paste", command=self.paste)
+        self.edit_menu.add_command(label="Cut        Ctrl+X", command=self.cut)
+        self.edit_menu.add_command(label="Copy     Ctrl+C", command=self.copy)
+        self.edit_menu.add_command(label="Paste     Ctrl+V", command=self.paste)
         self.edit_menu.add_command(label="Delete")
         self.edit_menu.add_separator()
         self.edit_menu.add_command(label="Select All")
 
 
-    def new_file(self):
+    def new_file(self, event=None):
         """ Create a new file """
         if not self.text.compare("end-1c", "==", "1.0"):
             if self.current_open_file == 'no_file':
@@ -98,7 +100,7 @@ class NotePad(Tk):
         if self.filepath:
             self.text.insert('end', open(filepath, 'r').read())
 
-    def open_file(self):
+    def open_file(self, event=None):
         """ Display a file dialog to open a file"""
         self.text.delete(1.0, END)
         self.filepath = filedialog.askopenfilename(initialdir="/", title="Select file", filetypes=(("Text Documents", "*.txt"), ("All Files", "*.*")))
@@ -120,7 +122,7 @@ class NotePad(Tk):
         self.filepath.close()
         self.title(filename)
 
-    def save_file(self):
+    def save_file(self, event=None):
         """ Save a file """
         # Check if the file is new
         if self.current_open_file == "no_file":
@@ -132,25 +134,36 @@ class NotePad(Tk):
     def exit(self):
         self.quit()
 
-    def undo(self):
+    def undo(self, event=None):
         """ Reverses the last action """
         self.text.edit_undo()
 
-    def copy(self):
+    def copy(self, event=None):
         """ Copies the selected text """
         self.clipboard_clear()
         self.clipboard_append(self.text.selection_get())
 
-    def cut(self):
+    def cut(self, event=None):
         """ Cuts the selected text """
         self.clipboard_clear()
         self.clipboard_append(self.text.get(SEL_FIRST, SEL_LAST))
         self.text.delete(SEL_FIRST, SEL_LAST)
 
-    def paste(self):
+    def paste(self, event=None):
         """ Retrieves text from clipboard and displays inside widget"""
         self.text.insert('end', self.selection_get(selection="CLIPBOARD"))
 
-notepad = NotePad()
-notepad.mainloop()
+    def shortcuts(self):
+        self.bind("<Control_L><o>", self.open_file)
+        self.bind("<Control_L><n>", self.new_file)
+        self.bind("<Control_L><s>", self.save_file)
+        self.bind("<Control_L><z>", self.undo)
+        self.bind("<Control_L><c>", self.copy)
+        self.bind("<Control_L><x>", self.cut)
+        self.bind("<Control_L><v>", self.paste)
+
+
+if __name__ == '__main__':
+    notepad = NotePad()
+    notepad.mainloop()
 
